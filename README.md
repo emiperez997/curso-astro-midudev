@@ -187,3 +187,105 @@ title: "Markdown page"
 
 > [!TIP]
 > Cuando hagamos `console.log` dentro de cualquier componente se va a mostrar en la consola del servidor nunca en el cliente
+
+## Renderizado condicional
+
+Se puede utilizar `class:list` y tambien utilizar condicionales como dependencias
+
+```html
+    <span
+      class:list={[
+        "text-xs font-semibold mr-2 px-2.5 py-0.5 rounded",
+        {
+          "bg-green-500 text-green-100": success,
+          "bg-red-500 text-red-100": !success,
+        },
+      ]}
+    >
+      {launchSatus}
+    </span>
+```
+
+## Páginas dinámicas (getStaticPaths)
+
+Para crear páginas dinámicas se debe crear un archivo `.astro` en `src/pages` y agregarle el nombre de la ruta entre corchetes.
+
+```bash
+- src
+  - pages
+    - posts
+      - [slug].astro
+```
+
+> [!TIP]
+> Esto va a arrojar un error de `getStaticPaths` porque no tenemos la función definida
+
+Para resolver el error debemos agregar la función `getStaticPaths` en el archivo `.astro`:
+
+```js
+export async function getStaticPaths() {
+  // Llamar a una API externa
+  // para saber todas las ids que debes generar
+
+  const launches = await getLatestLaunches();
+
+  return launches.map((launch) => ({
+    params: { id: launch.id },
+  }));
+}
+```
+
+> [!TIP]
+> Esto sirve cuando tenemos una cantidad de páginas dinámicas conocidas, por ejemplo, si tenemos 1000 posts y queremos generar una página por cada post.
+
+## Páginas dinámicas (forma SSR)
+
+Debemos cambiar la configuración de nuestro archivo `astro.config.mjs`:
+
+```js
+export default {
+  // ...
+  // Valores de output
+  // server: SSR
+  // static: SSG
+  // hybrid: SSR + SSG
+  output: "server",
+};
+```
+
+> [!TIP]
+> Con el servidor activado podemos acceder a las `cookies` y `sessions`
+
+## View Transitions (Introducción)
+
+Es solo importar el componente `ViewsTransitions` y agregarlo en el layout:
+
+```html
+<ViewsTransitions />
+```
+
+## Componentes interactivos (las islas)
+
+Agregamos react (o preact)
+
+```bash
+pnpm astro add preact
+```
+
+> [!NOTE]
+> Preact es una librería que pesa menos que React
+
+Por defecto los componentes que creamos con Preact son estaticos. Para que funcione debemos agregarle la directiva `client:visible`.
+Tiene las siguientes propiedades:
+
+- `client:visible`: El componente se renderiza en el cliente
+- `client:hidden`: El componente no se renderiza en el cliente
+- `client:loadable`: El componente se renderiza en el cliente cuando se necesita
+
+## Persistir información
+
+Hay que agregarle la notación `transition:persist` al componente que queremos persistir.
+
+```html
+<slot name="title" transition:persist />
+```

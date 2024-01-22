@@ -1,15 +1,14 @@
 ---
 interface Props {
   id: string;
-  name: string;
   img: string;
   success: boolean;
   flightNumber: number;
-  details: string;
+  details: string | null;
 }
 
 const { success, flightNumber, img, id, details } = Astro.props;
-const successText = success ? "Éxito" : "Fracaso";
+const launchSatus = success ? "Success" : "Failure";
 ---
 
 <a
@@ -22,11 +21,15 @@ const successText = success ? "Éxito" : "Fracaso";
 
   <header class="p-4 flex-grow">
     <span
-      class={`text-xs font-semibold mr-2 px2.5 py-0.5 rounded ${
-        success ? "bg-green-200 text-green-900" : "bg-red-200 text-red-900"
-      }`}
+      class:list={[
+        "text-xs font-semibold mr-2 px-2.5 py-0.5 rounded",
+        {
+          "bg-green-500 text-green-100": success,
+          "bg-red-500 text-red-100": !success,
+        },
+      ]}
     >
-      {successText}
+      {launchSatus}
     </span>
 
     <h2 class="my-2 text-2xl font-bold tracking-tight text-white">
@@ -34,7 +37,11 @@ const successText = success ? "Éxito" : "Fracaso";
     </h2>
 
     <p class="mb-4 font-light ttext-gray-400">
-      {details?.length > 100 ? details.slice(0, 100) + "..." : details}
+      {
+        details !== null && details?.length > 100
+          ? details.slice(0, 100) + "..."
+          : details
+      }
     </p>
   </header>
 </a>
