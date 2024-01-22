@@ -1,0 +1,33 @@
+---
+// Aqui se puede ejecutar cualquier tipo de código JavaScript
+import { type APISpaceXResponse } from "../types/api";
+
+const res = await fetch("https://api.spacexdata.com/v5/launches/query", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    query: {},
+    options: {
+      sort: {
+        date_unix: "asc",
+      },
+      limit: 12,
+    },
+  }),
+});
+
+const { docs: launches } = (await res.json()) as APISpaceXResponse;
+---
+
+<div class="grid gap-8 sm:grid-cols-2 lg:grrid-cols-3">
+  <!-- Iterar un array -->
+  {
+    launches.map((launch) => (
+      <article>
+        <h2>Launch #{launch.id}</h2>
+      </article>
+    ))
+  }
+</div>
